@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stadium Seat Booking Layout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the seat grid and field/stage */
+        
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #1a202c;
+            /* Dark background */
+            color: #e2e8f0;
+            /* Light text */
+        }
+        
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            /* 6 columns for the seat layout */
+            gap: 15px;
+            /* Increased space between seats */
+            max-width: 800px;
+            /* Adjusted max width for the seat grid */
+            margin: 2rem auto;
+            /* Center the grid */
+            padding: 1.5rem;
+            background-color: #2d3748;
+            /* Darker background for the grid area */
+            border-radius: 12px;
+            /* Rounded corners for the grid container */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .seat {
+            width: 55px;
+            /* Significantly increased width for larger seats */
+            height: 55px;
+            /* Significantly increased height for larger seats */
+            background-color: #4a5568;
+            /* Default seat color */
+            border-radius: 8px;
+            /* Slightly more rounded seats */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            /* Larger text for seat numbers */
+            color: #a0aec0;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+            /* Prevent seat text from wrapping */
+            overflow: hidden;
+            /* Hide overflow if text is too long */
+            text-overflow: ellipsis;
+            /* Add ellipsis if text is truncated */
+        }
+        
+        .seat:hover:not(.occupied):not(.selected):not(.special) {
+            background-color: #3182ce;
+            /* Hover color for available seats (blue) */
+            transform: scale(1.05);
+        }
+        
+        .seat.selected {
+            background-color: #48bb78;
+            /* Selected seat color (green) */
+            color: #fff;
+            box-shadow: 0 0 0 3px #48bb78;
+            /* Highlight selected */
+        }
+        
+        .seat.occupied {
+            background-color: #e53e3e;
+            /* Occupied seat color (red) */
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .seat.special {
+            background-color: #ecc94b;
+            /* Special seat color (yellow) */
+            color: #2d3748;
+            /* Darker text for contrast */
+            font-weight: 600;
+        }
+        
+        .seat.special:hover:not(.occupied):not(.selected) {
+            background-color: #d69e2e;
+            /* Darker yellow on hover */
+            transform: scale(1.05);
+        }
+        
+        .field-stage {
+            background-color: #a0aec0;
+            /* Light grey for the field/stage */
+            height: 100px;
+            width: 90%;
+            /* Field/Stage width relative to container */
+            max-width: 1000px;
+            margin: 2rem auto;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transform: perspective(700px) rotateX(-25deg);
+            /* 3D effect */
+        }
+        /* Styling for section titles within the grid */
+        
+        .seat-section-title {
+            grid-column: 1 / -1;
+            /* Span across all columns */
+            text-align: left;
+            font-size: 0.875rem;
+            /* text-sm */
+            color: #a0aec0;
+            /* gray-400 */
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        /* Responsive adjustments for smaller screens */
+        
+        @media (max-width: 1024px) {
+            .seat-grid {
+                grid-template-columns: repeat(5, 1fr);
+                /* Adjusted columns for tablet */
+                max-width: 600px;
+                gap: 12px;
+            }
+            .seat {
+                width: 50px;
+                height: 50px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .seat-grid {
+                grid-template-columns: repeat(4, 1fr);
+                /* Fewer columns on smaller screens */
+                max-width: 450px;
+                gap: 10px;
+            }
+            .seat {
+                width: 45px;
+                height: 45px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .seat-grid {
+                grid-template-columns: repeat(3, 1fr);
+                /* Even fewer columns on very small screens */
+                max-width: 300px;
+                gap: 8px;
+            }
+            .seat {
+                width: 40px;
+                height: 40px;
+                font-size: 0.8rem;
+            }
+            .field-stage {
+                height: 60px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
+    <header class="w-full max-w-5xl bg-gray-800 p-6 rounded-xl shadow-lg mb-8 flex flex-col sm:flex-row justify-between items-center">
+        <h1 class="text-3xl font-bold text-indigo-400 mb-4 sm:mb-0">
+            Stadium Ticket Booking
+        </h1>
+        <nav>
+            <ul class="flex space-x-6 text-lg">
+                <li>
+                    <a href="#" class="text-gray-300 hover:text-indigo-300 transition duration-300">Events</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="text-gray-300 hover:text-indigo-300 transition duration-300"
+              >Venues</a
+            >
+          </li>
+          <li>
+            <a
+              href="#"
+              class="text-gray-300 hover:text-indigo-300 transition duration-300"
+              >My Tickets</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="w-full max-w-5xl bg-gray-800 p-8 rounded-xl shadow-lg">
+      <section
+        class="flex flex-col md:flex-row items-center md:items-start mb-8 border-b border-gray-700 pb-6"
+      >
+        <img
+          src="https://placehold.co/180x250/312e81/ffffff?text=Event+Banner"
+          alt="Event Banner"
+          class="w-44 h-auto rounded-lg shadow-md mb-6 md:mb-0 md:mr-8"
+        />
+        <div>
+          <h2 class="text-4xl font-extrabold text-white mb-2">
+            Grand Football Championship Final
+          </h2>
+          <p class="text-indigo-300 text-xl mb-4">
+            Sports, Football | 2h 00min (approx)
+          </p>
+          <div class="flex items-center text-gray-400 text-lg mb-2">
+            <span class="mr-2">🏟️</span> Pokhara Stadium
+          </div>
+          <p class="text-gray-400 text-lg">
+            Witness the thrilling final match of the championship! Two titans
+            clash for ultimate glory. Be there to support your favorite team in
+            this historic event.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-4">
+            <span
+              class="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+              >Date: Sat, June 15</span
+            >
+            <span
+              class="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+              >Time: 06:00 PM</span
+            >
+            <span
+              class="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+              >Gate A</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="text-center mb-8">
+        <h3 class="text-2xl font-semibold text-white mb-6">
+          Select Your Seats
+        </h3>
+
+        <div class="field-stage rounded-lg">FIELD / STAGE THIS WAY</div>
+
+        <div
+          class="flex justify-center flex-wrap gap-x-6 gap-y-2 text-sm mb-8 mt-4"
+        >
+          <div class="flex items-center">
+            <span class="w-4 h-4 bg-gray-600 rounded-sm mr-2"></span> Available
+          </div>
+          <div class="flex items-center">
+            <span class="w-4 h-4 bg-green-500 rounded-sm mr-2"></span> Selected
+          </div>
+          <div class="flex items-center">
+            <span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span> Occupied
+          </div>
+          <div class="flex items-center">
+            <span class="w-4 h-4 bg-yellow-500 rounded-sm mr-2"></span> Special
+            Needs
+          </div>
+        </div>
+
+        <div class="seat-grid">
+          <!-- Section A -->
+          <div
+            class="col-span-full text-left text-sm text-gray-400 mb-2 seat-section-title"
+          >
+            Section A
+          </div>
+          <!-- Row 1 (Special Seats for Disabled) -->
+          <div class="seat special" data-seat="A-R1-S1W">A-R1-S1W</div>
+          <div class="seat special" data-seat="A-R1-S2W">A-R1-S2W</div>
+          <div class="seat special" data-seat="A-R1-S3W">A-R1-S3W</div>
+          <div class="seat special" data-seat="A-R1-S4W">A-R1-S4W</div>
+          <div class="seat" data-seat="A-R1-S5">A-R1-S5</div>
+          <div class="seat" data-seat="A-R1-S6">A-R1-S6</div>
+          <!-- Remaining rows for Section A -->
+          <div class="seat" data-seat="A-R2-S1">A-R2-S1</div>
+          <div class="seat" data-seat="A-R2-S2">A-R2-S2</div>
+          <div class="seat" data-seat="A-R2-S3">A-R2-S3</div>
+          <div class="seat" data-seat="A-R2-S4">A-R2-S4</div>
+          <div class="seat" data-seat="A-R2-S5">A-R2-S5</div>
+          <div class="seat" data-seat="A-R2-S6">A-R2-S6</div>
+          <div class="seat" data-seat="A-R3-S1">A-R3-S1</div>
+          <div class="seat" data-seat="A-R3-S2">A-R3-S2</div>
+          <div class="seat" data-seat="A-R3-S3">A-R3-S3</div>
+          <div class="seat" data-seat="A-R3-S4">A-R3-S4</div>
+          <div class="seat occupied" data-seat="A-R3-S5">A-R3-S5</div>
+          <div class="seat" data-seat="A-R3-S6">A-R3-S6</div>
+          <div class="seat" data-seat="A-R4-S1">A-R4-S1</div>
+          <div class="seat" data-seat="A-R4-S2">A-R4-S2</div>
+          <div class="seat" data-seat="A-R4-S3">A-R4-S3</div>
+          <div class="seat" data-seat="A-R4-S4">A-R4-S4</div>
+          <div class="seat" data-seat="A-R4-S5">A-R4-S5</div>
+          <div class="seat" data-seat="A-R4-S6">A-R4-S6</div>
+          <div class="seat" data-seat="A-R5-S1">A-R5-S1</div>
+          <div class="seat" data-seat="A-R5-S2">A-R5-S2</div>
+          <div class="seat" data-seat="A-R5-S3">A-R5-S3</div>
+          <div class="seat" data-seat="A-R5-S4">A-R5-S4</div>
+          <div class="seat" data-seat="A-R5-S5">A-R5-S5</div>
+          <div class="seat" data-seat="A-R5-S6">A-R5-S6</div>
+          <div class="seat" data-seat="A-R6-S1">A-R6-S1</div>
+          <div class="seat" data-seat="A-R6-S2">A-R6-S2</div>
+          <div class="seat" data-seat="A-R6-S3">A-R6-S3</div>
+          <div class="seat" data-seat="A-R6-S4">A-R6-S4</div>
+          <div class="seat" data-seat="A-R6-S5">A-R6-S5</div>
+          <div class="seat" data-seat="A-R6-S6">A-R6-S6</div>
+          <div class="seat" data-seat="A-R7-S1">A-R7-S1</div>
+          <div class="seat" data-seat="A-R7-S2">A-R7-S2</div>
+          <div class="seat" data-seat="A-R7-S3">A-R7-S3</div>
+          <div class="seat" data-seat="A-R7-S4">A-R7-S4</div>
+          <div class="seat" data-seat="A-R7-S5">A-R7-S5</div>
+          <div class="seat" data-seat="A-R7-S6">A-R7-S6</div>
+          <div class="seat" data-seat="A-R8-S1">A-R8-S1</div>
+          <div class="seat" data-seat="A-R8-S2">A-R8-S2</div>
+          <div class="seat" data-seat="A-R8-S3">A-R8-S3</div>
+          <div class="seat" data-seat="A-R8-S4">A-R8-S4</div>
+          <div class="seat" data-seat="A-R8-S5">A-R8-S5</div>
+          <div class="seat" data-seat="A-R8-S6">A-R8-S6</div>
+          <div class="seat" data-seat="A-R9-S1">A-R9-S1</div>
+          <div class="seat" data-seat="A-R9-S2">A-R9-S2</div>
+
+          <!-- Section B -->
+          <div
+            class="col-span-full text-left text-sm text-gray-400 mt-4 mb-2 seat-section-title"
+          >
+            Section B
+          </div>
+          <!-- Row 1 (Special Seats for Disabled) -->
+          <div class="seat special" data-seat="B-R1-S1W">B-R1-S1W</div>
+          <div class="seat special" data-seat="B-R1-S2W">B-R1-S2W</div>
+          <div class="seat special" data-seat="B-R1-S3W">B-R1-S3W</div>
+          <div class="seat special" data-seat="B-R1-S4W">B-R1-S4W</div>
+          <div class="seat occupied" data-seat="B-R1-S5">B-R1-S5</div>
+          <div class="seat" data-seat="B-R1-S6">B-R1-S6</div>
+          <!-- Remaining rows for Section B -->
+          <div class="seat" data-seat="B-R2-S1">B-R2-S1</div>
+          <div class="seat" data-seat="B-R2-S2">B-R2-S2</div>
+          <div class="seat" data-seat="B-R2-S3">B-R2-S3</div>
+          <div class="seat" data-seat="B-R2-S4">B-R2-S4</div>
+          <div class="seat" data-seat="B-R2-S5">B-R2-S5</div>
+          <div class="seat" data-seat="B-R2-S6">B-R2-S6</div>
+          <div class="seat" data-seat="B-R3-S1">B-R3-S1</div>
+          <div class="seat" data-seat="B-R3-S2">B-R3-S2</div>
+          <div class="seat occupied" data-seat="B-R3-S3">B-R3-S3</div>
+          <div class="seat" data-seat="B-R3-S4">B-R3-S4</div>
+          <div class="seat" data-seat="B-R3-S5">B-R3-S5</div>
+          <div class="seat" data-seat="B-R3-S6">B-R3-S6</div>
+          <div class="seat" data-seat="B-R4-S1">B-R4-S1</div>
+          <div class="seat" data-seat="B-R4-S2">B-R4-S2</div>
+          <div class="seat" data-seat="B-R4-S3">B-R4-S3</div>
+          <div class="seat" data-seat="B-R4-S4">B-R4-S4</div>
+          <div class="seat" data-seat="B-R4-S5">B-R4-S5</div>
+          <div class="seat" data-seat="B-R4-S6">B-R4-S6</div>
+          <div class="seat" data-seat="B-R5-S1">B-R5-S1</div>
+          <div class="seat" data-seat="B-R5-S2">B-R5-S2</div>
+          <div class="seat" data-seat="B-R5-S3">B-R5-S3</div>
+          <div class="seat" data-seat="B-R5-S4">B-R5-S4</div>
+          <div class="seat" data-seat="B-R5-S5">B-R5-S5</div>
+          <div class="seat" data-seat="B-R5-S6">B-R5-S6</div>
+          <div class="seat" data-seat="B-R6-S1">B-R6-S1</div>
+          <div class="seat" data-seat="B-R6-S2">B-R6-S2</div>
+          <div class="seat" data-seat="B-R6-S3">B-R6-S3</div>
+          <div class="seat" data-seat="B-R6-S4">B-R6-S4</div>
+          <div class="seat" data-seat="B-R6-S5">B-R6-S5</div>
+          <div class="seat" data-seat="B-R6-S6">B-R6-S6</div>
+          <div class="seat" data-seat="B-R7-S1">B-R7-S1</div>
+          <div class="seat" data-seat="B-R7-S2">B-R7-S2</div>
+          <div class="seat" data-seat="B-R7-S3">B-R7-S3</div>
+          <div class="seat" data-seat="B-R7-S4">B-R7-S4</div>
+          <div class="seat" data-seat="B-R7-S5">B-R7-S5</div>
+          <div class="seat" data-seat="B-R7-S6">B-R7-S6</div>
+          <div class="seat" data-seat="B-R8-S1">B-R8-S1</div>
+          <div class="seat" data-seat="B-R8-S2">B-R8-S2</div>
+          <div class="seat" data-seat="B-R8-S3">B-R8-S3</div>
+          <div class="seat" data-seat="B-R8-S4">B-R8-S4</div>
+          <div class="seat" data-seat="B-R8-S5">B-R8-S5</div>
+          <div class="seat" data-seat="B-R8-S6">B-R8-S6</div>
+          <div class="seat" data-seat="B-R9-S1">B-R9-S1</div>
+          <div class="seat" data-seat="B-R9-S2">B-R9-S2</div>
+
+          <!-- Section C -->
+          <div
+            class="col-span-full text-left text-sm text-gray-400 mb-2 seat-section-title"
+          >
+            Section C
+          </div>
+          <!--Row1 (Special Seats for Disabled) -->
+          <div class="seat special" data-seat="C-R1-S1W">C-R1-S1W</div>
+          <div class="seat special" data-seat="C-R1-S2W">C-R1-S2W</div>
+          <div class="seat special" data-seat="C-R1-S3W">C-R1-S3W</div>
+          <div class="seat special" data-seat="C-R1-S4W">C-R1-S4W</div>
+          <div class="seat occupied" data-seat="C-R1-S5">C-R1-S5</div>
+          <div class="seat" data-seat="C-R1-S6">C-R1-S6</div>
+          <!-- Remaining rows for Section C -->
+          <div class="seat" data-seat="C-R2-S1">C-R2-S1</div>
+          <div class="seat" data-seat="C-R2-S2">C-R2-S2</div>
+          <div class="seat" data-seat="C-R2-S3">C-R2-S3</div>
+          <div class="seat" data-seat="C-R2-S4">C-R2-S4</div>
+          <div class="seat" data-seat="C-R2-S5">C-R2-S5</div>
+          <div class="seat" data-seat="C-R2-S6">C-R2-S6</div>
+          <div class="seat" data-seat="C-R3-S1">C-R3-S1</div>
+          <div class="seat" data-seat="C-R3-S2">C-R3-S2</div>
+          <div class="seat" data-seat="C-R3-S3">C-R3-S3</div>
+          <div class="seat" data-seat="C-R3-S4">C-R3-S4</div>
+          <div class="seat" data-seat="C-R3-S5">C-R3-S5</div>
+          <div class="seat" data-seat="C-R3-S6">C-R3-S6</div>
+          <div class="seat" data-seat="C-R4-S1">C-R4-S1</div>
+          <div class="seat" data-seat="C-R4-S2">C-R4-S2</div>
+          <div class="seat" data-seat="C-R4-S3">C-R4-S3</div>
+          <div class="seat" data-seat="C-R4-S4">C-R4-S4</div>
+          <div class="seat" data-seat="C-R4-S5">C-R4-S5</div>
+          <div class="seat" data-seat="C-R4-S6">C-R4-S6</div>
+          <div class="seat" data-seat="C-R5-S1">C-R5-S1</div>
+          <div class="seat" data-seat="C-R5-S2">C-R5-S2</div>
+          <div class="seat" data-seat="C-R5-S3">C-R5-S3</div>
+          <div class="seat" data-seat="C-R5-S4">C-R5-S4</div>
+          <div class="seat" data-seat="C-R5-S5">C-R5-S5</div>
+          <div class="seat" data-seat="C-R5-S6">C-R5-S6</div>
+          <div class="seat" data-seat="C-R6-S1">C-R6-S1</div>
+          <div class="seat" data-seat="C-R6-S2">C-R6-S2</div>
+          <div class="seat" data-seat="C-R6-S3">C-R6-S3</div>
+          <div class="seat" data-seat="C-R6-S4">C-R6-S4</div>
+          <div class="seat" data-seat="C-R6-S5">C-R6-S5</div>
+          <div class="seat" data-seat="C-R6-S6">C-R6-S6</div>
+          <div class="seat" data-seat="C-R7-S1">C-R7-S1</div>
+          <div class="seat" data-seat="C-R7-S2">C-R7-S2</div>
+          <div class="seat" data-seat="C-R7-S3">C-R7-S3</div>
+          <div class="seat" data-seat="C-R7-S4">C-R7-S4</div>
+          <div class="seat" data-seat="C-R7-S5">C-R7-S5</div>
+          <div class="seat" data-seat="C-R7-S6">C-R7-S6</div>
+          <div class="seat" data-seat="C-R8-S1">C-R8-S1</div>
+          <div class="seat" data-seat="C-R8-S2">C-R8-S2</div>
+          <div class="seat" data-seat="C-R8-S3">C-R8-S3</div>
+          <div class="seat" data-seat="C-R8-S4">C-R8-S4</div>
+          <div class="seat" data-seat="C-R8-S5">C-R8-S5</div>
+          <div class="seat" data-seat="C-R8-S6">C-R8-S6</div>
+          <div class="seat" data-seat="C-R9-S1">C-R9-S1</div>
+          <div class="seat" data-seat="C-R9-S2">C-R9-S2</div>
+        </div>
+      </section>
+
+      <section
+        class="flex flex-col sm:flex-row justify-between items-center bg-gray-700 p-6 rounded-lg shadow-md mt-8"
+      >
+        <div class="text-xl font-medium mb-4 sm:mb-0">
+          Selected Seats:
+          <span id="selected-seats" class="text-indigo-400">0</span>
+        </div>
+        <div class="text-xl font-bold">
+          Total Price:
+          <span id="total-price" class="text-green-400">Rs.0.00</span>
+        </div>
+        <button
+          id="book-button"
+          class="mt-6 sm:mt-0 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+        >
+          Book Now
+        </button>
+      </section>
+    </main>
+
+    <footer class="mt-12 text-gray-500 text-sm">
+      &copy; 2025 Stadium Booking System. All rights reserved.
+    </footer>
+
+    <script>
+      // JavaScript for seat selection logic
+      const selectedSeatsSpan = document.getElementById("selected-seats");
+      const totalPriceSpan = document.getElementById("total-price");
+      const bookButton = document.getElementById("book-button");
+
+      // The base ticket price in Nepalese Rupees (NPR)
+      const baseTicketPrice = 500;
+      // Discount percentage for special seats
+      const specialSeatDiscount = 0.1; // 10% discount
+
+      let selectedSeatElements = []; // Stores references to the actual selected seat DOM elements
+
+      // Function to update the summary display (number of selected seats and total price)
+      function updateSummary() {
+        let totalSeatsCount = selectedSeatElements.length;
+        let totalPrice = 0;
+
+        // Calculate total price based on selected seats and apply discount for special seats
+        selectedSeatElements.forEach((seatElement) => {
+          if (seatElement.classList.contains("special")) {
+            totalPrice += baseTicketPrice * (1 - specialSeatDiscount);
+          } else {
+            totalPrice += baseTicketPrice;
+          }
+        });
+        selectedSeatsSpan.textContent = totalSeatsCount;
+        totalPriceSpan.textContent = `Rs.${totalPrice.toFixed(2)}`;
+
+        // Disable book button if no seats are selected
+        bookButton.disabled = totalSeatsCount === 0;
+        // Apply visual styles for disabled button
+        bookButton.classList.toggle("opacity-50", totalSeatsCount === 0);
+        bookButton.classList.toggle(
+          "cursor-not-allowed",
+          totalSeatsCount === 0
+        );
+      }
+      // Add click listener to the parent seat-grid for event delegation
+      const seatGrid = document.querySelector(".seat-grid");
+      seatGrid.addEventListener("click", (event) => {
+        // Find the closest seat element that was clicked, ensuring it's not occupied
+        const seat = event.target.closest(".seat:not(.occupied)");
+
+        // If no valid seat was clicked, exit the function
+        if (!seat) {
+          return;
+        }
+        // Toggle the 'selected' class on the clicked seat
+        seat.classList.toggle("selected");
+
+        if (seat.classList.contains("selected")) {
+          // If the seat is now selected, add its element reference to the array
+          if (!selectedSeatElements.includes(seat)) {
+            selectedSeatElements.push(seat);
+          }
+        } else {
+          // If the seat is now unselected, remove its element reference from the array
+          selectedSeatElements = selectedSeatElements.filter((s) => s !== seat);
+        }
+        // Update the summary display after selection change
+        updateSummary();
+      });
+
+      // Initial update of summary when the page loads
+      updateSummary();
+
+      // Book button click handler
+      bookButton.addEventListener("click", () => {
+        if (selectedSeatElements.length > 0) {
+          // Get the seat IDs for the alert message
+          const seatIds = selectedSeatElements.map((seat) => seat.dataset.seat);
+          const currentTotalPrice = parseFloat(
+            totalPriceSpan.textContent.replace("Rs.", "")
+          );
+
+          // Display a custom alert with booking details
+          customAlert(
+            `Booking ${selectedSeatElements.length} seat(s): ${seatIds.join(
+              ", "
+            )} for a total of Rs.${currentTotalPrice.toFixed(2)}`
+          );
+   // Mark selected seats as occupied after booking (for demonstration purposes)
+          selectedSeatElements.forEach((seatElement) => {
+            seatElement.classList.remove("selected"); // Remove selected state
+            seatElement.classList.add("occupied"); // Mark as occupied
+     // To prevent re-selection, clone and replace the node to remove all attached listeners
+            const newSeat = seatElement.cloneNode(true);
+            seatElement.parentNode.replaceChild(newSeat, seatElement);
+          });
+          selectedSeatElements = []; // Clear the selected seats array
+          updateSummary(); // Update the summary display
+        } else {
+            // If no seats are selected, show an alert
+          customAlert("Please select at least one seat to book.");
+        }
+      });
+ // Custom alert function (replaces window.alert for better styling)
+      function customAlert(message) {
+        const alertBox = document.createElement("div");
+        alertBox.className =
+          "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50";
+        alertBox.innerHTML = `
+                <div class="bg-gray-800 p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+                    <p class="text-white text-lg mb-6">${message}</p>
+                    <button id="alert-ok-button" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-300">OK</button>
+                </div>
+            `;
+        document.body.appendChild(alertBox);
+        // Add event listener to the OK button to close the alert
+        const okButton = document.getElementById("alert-ok-button");
+        okButton.addEventListener("click", () => {
+          document.body.removeChild(alertBox);
+        });
+        // Focus the OK button for accessibility
+        okButton.focus();
+      }
+    </script>
+  </body>
+</html>
